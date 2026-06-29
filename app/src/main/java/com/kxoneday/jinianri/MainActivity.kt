@@ -76,7 +76,6 @@ import androidx.compose.material.icons.filled.PinDrop
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.School
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.Settings as SettingsIcon
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.Work
@@ -404,7 +403,7 @@ private fun MainShell(store: JinianriStore) {
             ) {
                 BottomTab(0, selectedTab, "首页", Icons.Default.Home) { selectedTab = it }
                 BottomTab(1, selectedTab, "时间计算器", Icons.Default.CalendarMonth) { selectedTab = it }
-                BottomTab(2, selectedTab, "设置", SettingsIcon) { selectedTab = it }
+                BottomTab(2, selectedTab, "设置", Icons.Default.Settings) { selectedTab = it }
             }
         }
     ) { padding ->
