@@ -8,7 +8,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
-import android.provider.Settings
+import android.provider.Settings as AndroidSettings
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
@@ -22,6 +22,7 @@ import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
@@ -75,7 +76,7 @@ import androidx.compose.material.icons.filled.PinDrop
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.School
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.Settings as SettingsIcon
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.Work
@@ -403,7 +404,7 @@ private fun MainShell(store: JinianriStore) {
             ) {
                 BottomTab(0, selectedTab, "首页", Icons.Default.Home) { selectedTab = it }
                 BottomTab(1, selectedTab, "时间计算器", Icons.Default.CalendarMonth) { selectedTab = it }
-                BottomTab(2, selectedTab, "设置", Icons.Default.Settings) { selectedTab = it }
+                BottomTab(2, selectedTab, "设置", SettingsIcon) { selectedTab = it }
             }
         }
     ) { padding ->
@@ -666,7 +667,7 @@ private fun MemorialCard(
 @Composable
 private fun ActionTile(label: String, icon: ImageVector, color: Color, action: () -> Unit) {
     Column(
-        Modifier.width(72.dp).fillMaxHeight().clip(RoundedCornerShape(14.dp)).background(color).clickable(action = action),
+        Modifier.width(72.dp).fillMaxHeight().clip(RoundedCornerShape(14.dp)).background(color).clickable(onClick = action),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
@@ -1013,7 +1014,7 @@ private fun SettingsScreen(store: JinianriStore) {
         item {
             SectionCard("通知设置", store) {
                 SwitchRow("允许通知", "关闭后将收不到任何提醒", store.settings.notificationsEnabled, store) { store.saveSettings(store.settings.copy(notificationsEnabled = it)) }
-                LinkRow("系统通知设置", Icons.Default.ArrowForward) { context.startActivity(Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName)) }
+                LinkRow("系统通知设置", Icons.Default.ArrowForward) { context.startActivity(Intent(AndroidSettings.ACTION_APP_NOTIFICATION_SETTINGS).putExtra(AndroidSettings.EXTRA_APP_PACKAGE, context.packageName)) }
                 LinkRow("发送测试通知", Icons.Default.Notifications, AppColors.Warning) { sendTestNotification(context) }
             }
         }
@@ -1097,7 +1098,7 @@ private fun SearchBox(value: String, onChange: (String) -> Unit) {
 
 @Composable
 private fun FilterChip(label: String, icon: ImageVector, selected: Boolean, action: () -> Unit) {
-    Row(Modifier.clip(RoundedCornerShape(50)).background(if (selected) AppColors.Primary else Color.Transparent).border(1.dp, if (selected) Color.Transparent else AppColors.TextTertiary.copy(alpha = 0.3f), RoundedCornerShape(50)).clickable(action = action).padding(horizontal = 12.dp, vertical = 7.dp), verticalAlignment = Alignment.CenterVertically) {
+    Row(Modifier.clip(RoundedCornerShape(50)).background(if (selected) AppColors.Primary else Color.Transparent).border(1.dp, if (selected) Color.Transparent else AppColors.TextTertiary.copy(alpha = 0.3f), RoundedCornerShape(50)).clickable(onClick = action).padding(horizontal = 12.dp, vertical = 7.dp), verticalAlignment = Alignment.CenterVertically) {
         Icon(icon, null, tint = if (selected) Color.White else AppColors.TextSecondary, modifier = Modifier.size(13.dp))
         Spacer(Modifier.width(5.dp))
         Text(label, color = if (selected) Color.White else AppColors.TextSecondary, fontSize = 13.sp, fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Normal)
@@ -1159,7 +1160,7 @@ private fun UpcomingSection(days: List<MemorialDay>, store: JinianriStore) {
 
 @Composable
 private fun FloatingCircle(icon: ImageVector, size: androidx.compose.ui.unit.Dp, color: Color, action: () -> Unit) {
-    Box(Modifier.size(size).shadow(6.dp, CircleShape).clip(CircleShape).background(color).clickable(action = action), contentAlignment = Alignment.Center) {
+    Box(Modifier.size(size).shadow(6.dp, CircleShape).clip(CircleShape).background(color).clickable(onClick = action), contentAlignment = Alignment.Center) {
         Icon(icon, null, tint = Color.White)
     }
 }
@@ -1178,7 +1179,7 @@ private fun PreviewCard(day: MemorialDay) {
 }
 
 @Composable
-private fun SectionCard(title: String, store: JinianriStore, content: @Composable Column.() -> Unit) {
+private fun SectionCard(title: String, store: JinianriStore, content: @Composable ColumnScope.() -> Unit) {
     Column(Modifier.fillMaxWidth().padding(vertical = 8.dp).clip(RoundedCornerShape(14.dp)).background(if (store.settings.darkMode) AppColors.CardDark else AppColors.CardLight).padding(16.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
         Text(title, color = textPrimary(store), fontWeight = FontWeight.SemiBold)
         content()
@@ -1198,7 +1199,7 @@ private fun SwitchRow(title: String, subtitle: String, checked: Boolean, store: 
 
 @Composable
 private fun Pill(text: String, selected: Boolean, action: () -> Unit) {
-    Text(text, color = if (selected) Color.White else AppColors.TextSecondary, fontSize = 13.sp, modifier = Modifier.clip(RoundedCornerShape(50)).background(if (selected) AppColors.Primary else Color.Transparent).border(1.dp, AppColors.TextTertiary.copy(alpha = 0.3f), RoundedCornerShape(50)).clickable(action = action).padding(horizontal = 14.dp, vertical = 7.dp))
+    Text(text, color = if (selected) Color.White else AppColors.TextSecondary, fontSize = 13.sp, modifier = Modifier.clip(RoundedCornerShape(50)).background(if (selected) AppColors.Primary else Color.Transparent).border(1.dp, AppColors.TextTertiary.copy(alpha = 0.3f), RoundedCornerShape(50)).clickable(onClick = action).padding(horizontal = 14.dp, vertical = 7.dp))
 }
 
 @Composable
@@ -1236,7 +1237,7 @@ private fun TimeBlock(value: Int, unit: String, color: Color, modifier: Modifier
 }
 
 @Composable
-private fun CalculatorBody(store: JinianriStore, content: @Composable Column.() -> Unit) {
+private fun CalculatorBody(store: JinianriStore, content: @Composable ColumnScope.() -> Unit) {
     Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) { content() }
 }
 
@@ -1281,7 +1282,7 @@ private fun ResultCard(store: JinianriStore, text: String) {
 
 @Composable
 private fun LinkRow(label: String, icon: ImageVector, color: Color = AppColors.Primary, action: () -> Unit) {
-    Row(Modifier.fillMaxWidth().clickable(action = action).padding(vertical = 4.dp), verticalAlignment = Alignment.CenterVertically) {
+    Row(Modifier.fillMaxWidth().clickable(onClick = action).padding(vertical = 4.dp), verticalAlignment = Alignment.CenterVertically) {
         Text(label, color = color, fontSize = 14.sp)
         Spacer(Modifier.weight(1f))
         Icon(icon, null, tint = AppColors.TextTertiary, modifier = Modifier.size(16.dp))
@@ -1299,7 +1300,7 @@ private fun InfoRow(label: String, value: String, store: JinianriStore, valueCol
 
 @Composable
 private fun NumberButton(key: String, store: JinianriStore, action: () -> Unit) {
-    Box(Modifier.aspectRatio(1f).clip(CircleShape).background(if (store.settings.darkMode) AppColors.SecondaryBgDark else AppColors.SecondaryBgLight).clickable(action = action), contentAlignment = Alignment.Center) {
+    Box(Modifier.aspectRatio(1f).clip(CircleShape).background(if (store.settings.darkMode) AppColors.SecondaryBgDark else AppColors.SecondaryBgLight).clickable(onClick = action), contentAlignment = Alignment.Center) {
         Text(key, color = textPrimary(store), fontSize = 28.sp, fontWeight = FontWeight.Medium)
     }
 }
